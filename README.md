@@ -12,6 +12,7 @@
 ## Table of Contents
 * [Description](#description)
 * [Installation](#installation)
+* [Containerization](#containerization)
 * [Screenshots of the Django Backend Admin Panel](#screenshots)
 * [Useful Links](#useful_links)
 
@@ -23,7 +24,7 @@ __Signs for Trucks__ is an online store to buy pre-designed vinyls with custom l
 
 ### Settings
 
-The __settings__ folder inside the trucks_signs_designs folder contains the different setting's configuration for each environment (so far the environments are development, docker testing, and production). Those files are extensions of the base.py file which contains the basic configuration shared among the different environments (for example, the value of the template directory location). In addition, the .env file inside this folder has the environment variables that are mostly sensitive information and should always be configured before use. By default, the environment in use is the decker testing. To change between environments modify the \_\_init.py\_\_ file.
+The __settings__ folder inside the trucks_signs_designs folder contains the different setting's configuration for each environment (so far the environments are development, testing, and production). Those files are extensions of the base.py file which contains the basic configuration shared among the different environments (for example, the value of the template directory location). In addition, the .env file inside this folder has the environment variables that are mostly sensitive information and should always be configured before use. By default, the environment in use is the testing. To change between environments modify the \_\_init.py\_\_ file.
 
 ### Models
 
@@ -51,11 +52,11 @@ The behavior of some of the views had to be modified to address functionalities 
     ```
 1. Configure a virtual env and set up the database. See [Link for configuring Virtual Environment](https://docs.python-guide.org/dev/virtualenvs/) and [Link for Database setup](https://www.digitalocean.com/community/tutorials/how-to-set-up-django-with-postgres-nginx-and-gunicorn-on-ubuntu-16-04).
 1. Configure the environment variables.
-    1. Copy the content of the example env file that is inside the truck_signs_designs folder into a .env file:
+    1. Copy the content of the example env file that is inside the root directory into a .env file:
         ```bash
-        cd truck_signs_designs/settings
         cp simple_env_config.env .env
         ```
+        Multiple .env files can be created for different environments. Refer to the [Containerization](#containerization) section for usage instructions.
     1. The new .env file should contain all the environment variables necessary to run all the django app in all the environments. However, the only needed variables for the development environment to run are the following:
         ```bash
         SECRET_KEY
@@ -101,6 +102,42 @@ The behavior of some of the views had to be modified to address functionalities 
 __NOTE:__ To create Truck vinyls with Truck logos in them, first create the __Category__ Truck Sign, and then the __Product__ (can have any name). This is to make sure the frontend retrieves the Truck vinyls for display in the Product Grid as it only fetches the products of the category Truck Sign.
 
 ---
+
+## Containerization
+
+For containerization with Docker, the corresponding `Dockerfile` and `docker-compose.yml` files are located in the root directory. These instructions assume the images will be stored in GitHub Container Registry (GHCR); however, Docker Hub is also a viable option. Running the app in a container can be implemented with the following steps:
+
+#### Build the Docker Image
+
+```bash
+docker build -t ghcr.io/<repository-owner>/<image-name>:<tag> .
+```
+
+**Parameters:**
+- `<repository-owner>` – Your GitHub username or organization name
+- `<image-name>` – The name of the image
+- `<tag>` – A unique tag for distinguishing between image versions. We recommend using [Semantic Versioning](https://semver.org/)
+
+#### Push the Image to GHCR
+
+```bash
+docker push ghcr.io/<repository-owner>/<image-name>:<tag>
+```
+
+#### Pull and Deploy from GHCR
+
+To pull the image from GHCR and deploy it to your host:
+
+```bash
+REPOSITORY_OWNER=<repository-owner> TAG=<tag> docker compose --env-file <path-to-file> up -d
+```
+
+**Configuration Details:**
+
+The Docker Compose configuration retrieves the image from GHCR and deploys it to your host. To pull the correct image, ensure that `REPOSITORY_OWNER` and `TAG` reference your intended image.
+
+The application supports deploying multiple environments with their own configurations (dev, test, and production). Use the `--env-file` flag to specify the file containing all required environment variables for your target environment.
+
 
 <a name="screenshots"></a>
 
