@@ -1,0 +1,51 @@
+services: 
+    app:
+        image: ghcr.io/${REPOSITORY_OWNER}/truck-signs:${TAG} 
+        container_name: truck-signs-app
+        environment:
+            SECRET_KEY: ${SECRET_KEY}
+            DB_NAME: ${DB_NAME}
+            DB_USER: ${DB_USER}
+            DB_PASSWORD: ${DB_PASSWORD}
+            DB_HOST: ${DB_HOST}
+            DB_PORT: ${DB_PORT}
+            STRIPE_PUBLISHABLE_KEY: ${STRIPE_PUBLISHABLE_KEY}
+            STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
+            EMAIL_HOST_USER: ${EMAIL_HOST_USER}
+            EMAIL_HOST_PASSWORD: ${EMAIL_HOST_PASSWORD}
+            DJANGO_SETTINGS_MODULE: ${DJANGO_SETTINGS_MODULE}
+            DJANGO_SUPERUSER_USERNAME: ${DJANGO_SUPERUSER_USERNAME}
+            DJANGO_SUPERUSER_PASSWORD: ${DJANGO_SUPERUSER_PASSWORD}
+            DJANGO_SUPERUSER_EMAIL: ${DJANGO_SUPERUSER_EMAIL}
+        ports:
+            - 8020:8020
+        depends_on:
+            db:
+                condition: service_healthy
+        restart: unless-stopped
+
+    db:
+        image: 
+            postgres:17-alpine
+        container_name:
+            truck-signs-db
+        environment:
+            POSTGRES_DB: ${DB_NAME}
+            POSTGRES_USER: ${DB_USER}
+            POSTGRES_PASSWORD: ${DB_PASSWORD}
+        restart:
+            unless-stopped
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+            interval: 10s
+            retries: 5
+            start_period: 10s
+            timeout: 10s
+    
+        volumes:
+            - db_data:/var/lib/postgresql/data
+
+volumes:
+  db_data: 
+
+    
