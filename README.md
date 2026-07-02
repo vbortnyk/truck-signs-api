@@ -12,7 +12,7 @@
 ## Table of Contents
 * [Description](#description)
 * [Installation](#installation)
-* [Containerization](#containerization)
+* [Usage](#usage)
 * [Screenshots of the Django Backend Admin Panel](#screenshots)
 * [Useful Links](#useful_links)
 
@@ -56,7 +56,7 @@ The behavior of some of the views had to be modified to address functionalities 
         ```bash
         cp simple_env_config.env .env
         ```
-        Multiple .env files can be created for different environments. Refer to the [Containerization](#containerization) section for usage instructions.
+        Multiple .env files can be created for different environments. Refer to the [Usage](#usage) section for usage instructions.
     1. The new .env file should contain all the environment variables necessary to run all the django app in all the environments. However, the only needed variables for the development environment to run are the following:
         ```bash
         SECRET_KEY
@@ -103,8 +103,7 @@ __NOTE:__ To create Truck vinyls with Truck logos in them, first create the __Ca
 
 ---
 
-## Containerization
-
+## Usage
 For containerization with Docker, the corresponding `Dockerfile` and `docker-compose.yml` files are located in the root directory. These instructions assume the images will be stored in GitHub Container Registry (GHCR); however, Docker Hub is also a viable option. Running the app in a container can be implemented with the following steps:
 
 #### Build the Docker Image
@@ -124,9 +123,7 @@ docker build -t ghcr.io/<repository-owner>/<image-name>:<tag> .
 docker push ghcr.io/<repository-owner>/<image-name>:<tag>
 ```
 
-#### Pull and Deploy from GHCR
-
-To pull the image from GHCR and deploy it to your host:
+#### Pull from GHCR and Deploy 
 
 ```bash
 REPOSITORY_OWNER=<repository-owner> TAG=<tag> docker compose --env-file <path-to-file> up -d
